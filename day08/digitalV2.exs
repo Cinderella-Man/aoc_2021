@@ -37,8 +37,6 @@ resolve_number = fn codes ->
   eight = Enum.find(codes, &(length(&1) == 7))
   four = Enum.find(codes, &(length(&1) == 4))
 
-  four_and_seven = (four ++ seven) |> Enum.sort() |> Enum.dedup()
-
   sub_of_a =
     Enum.frequencies(seven ++ one)
     |> Enum.filter(fn {_key, n} -> n == 1 end)
@@ -47,7 +45,7 @@ resolve_number = fn codes ->
   sub_of_g =
     codes
     |> Enum.filter(&(length(&1) == 6))
-    |> Enum.map(&Enum.frequencies(&1 ++ four_and_seven))
+    |> Enum.map(&Enum.frequencies(&1 ++ four ++ seven))
     |> Enum.map(&Enum.filter(&1, fn {_key, n} -> n == 1 end))
     |> Enum.filter(&(Enum.count(&1) == 1))
     |> List.flatten()
