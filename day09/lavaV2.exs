@@ -19,8 +19,53 @@ find_numbers = fn {lines, index} ->
   |> Enum.map(&({index, elem(&1, 0)}))
 end
 
-find_basin = fn(grid, coords) ->
+find_basin = fn(grid, path, fun) ->
+  {y, x} = List.first(path)
+  value = Enum.at(grid, y) |> Enum.at(x)
 
+
+  IO.inspect(value)
+
+  # IO.inspect(y - 1)
+  # IO.inspect(Enum.at(grid, y - 1, []))
+
+  top = Enum.at(grid, y - 1, []) |> Enum.at(x, 9)
+  right = Enum.at(grid, y, []) |> Enum.at(x + 1, 9)
+  bottom = Enum.at(grid, y + 1, []) |> Enum.at(x + 1, 9)
+  left = Enum.at(grid, y, []) |> Enum.at(x - 1, 9)
+
+  IO.inspect('--------------------')
+  IO.inspect(top)
+  IO.inspect(right)
+  IO.inspect(bottom)
+  IO.inspect(left)
+  IO.inspect('--------------------')
+
+  top_path = if top != 9 &&  top > value && !Enum.member?(path, {y - 1, x}) do
+    fun.(grid, [{y - 1, x} | path], fun)
+  else
+    []
+  end
+
+  right_path = if right != 9 && right > value && !Enum.member?(path, {y, x + 1}) do
+    fun.(grid, [{y, x + 1} | path], fun)
+  else
+    []
+  end
+
+  bottom_path = if bottom != 9 && bottom > value && !Enum.member?(path, {y + 1, x}) do
+    fun.(grid, [{y + 1, x} | path], fun)
+  else
+    []
+  end
+
+  left_path = if left != 9 && left > value && !Enum.member?(path, {y, x - 1}) do
+    fun.(grid, [{y, x - 1} | path], fun)
+  else
+    []
+  end
+
+  top_path ++ right_path ++ bottom_path ++ left_path
 end
 
 grid = data
@@ -36,5 +81,5 @@ low_points = grid
 |> List.flatten()
 
 low_points
-|> Enum.map(find_basin)
+|> Enum.map(&(find_basin.(grid, [&1], find_basin)))
 |> IO.inspect()
